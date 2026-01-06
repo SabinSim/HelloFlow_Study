@@ -10,6 +10,7 @@ public class HelloRepository
     // - Value(HelloResponse): 명함 내용
     // - Concurrent: "동시 접속이 와도 내가 알아서 교통정리 할게."
     private readonly ConcurrentDictionary<string, HelloResponse> _storage = new();
+    public readonly string InstanceId = Guid.NewGuid().ToString().Substring(0, 5);
 
     public void Save(HelloResponse data)
     {

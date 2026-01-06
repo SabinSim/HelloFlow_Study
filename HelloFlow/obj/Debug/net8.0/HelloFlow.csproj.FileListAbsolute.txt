@@ -30,3 +30,4 @@
 /Users/bini/SabinDev/C#/HelloFlow/HelloFlow/obj/Debug/net8.0/HelloFlow.pdb
 /Users/bini/SabinDev/C#/HelloFlow/HelloFlow/obj/Debug/net8.0/HelloFlow.genruntimeconfig.cache
 /Users/bini/SabinDev/C#/HelloFlow/HelloFlow/obj/Debug/net8.0/ref/HelloFlow.dll
+/Users/bini/SabinDev/C#/HelloFlow/HelloFlow/obj/Debug/net8.0/HelloFlow.sourcelink.json

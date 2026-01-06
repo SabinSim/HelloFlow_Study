@@ -7,6 +7,7 @@ public class HelloService
 {
     // 1. 이제 List를 직접 안 가집니다. 대신 Repository를 가집니다.
     private readonly HelloRepository _repository;
+    public readonly string InstanceId = Guid.NewGuid().ToString().Substring(0, 5);
 
     // 2. [계약] Service가 생성될 때 Repository가 필요합니다.
     public HelloService(HelloRepository repository)
@@ -23,7 +24,7 @@ public class HelloService
             CreatedAt = DateTime.Now,
             Location = "Cazis, Switzerland"
         };
-
+        Console.WriteLine($"[Service ID]: {InstanceId} (new) | [Repo ID]: {_repository.InstanceId} (old)");
         // 4. [저장 위임] "어이 창고지기, 이거 좀 넣어둬."
         _repository.Save(response);
 

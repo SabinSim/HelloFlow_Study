@@ -12,6 +12,16 @@ public class HelloRepository
     private readonly ConcurrentDictionary<string, HelloResponse> _storage = new();
     public readonly string InstanceId = Guid.NewGuid().ToString().Substring(0, 5);
 
+    public List<HelloResponse> Search(string keyword)
+    {
+        // _storage.Values: 딕셔너리에 있는 데이터들만 모음(Collection)
+        // .Where: 반복문을 돌면서 조건(x.Message에 Keyword가 있나?)이 참인것만 남김
+        // .ToList():  결과를 다시 리스트로 포장해서 반환
+        return _storage.Values
+            .Where(x => x.Message.Contains(keyword))
+            .ToList();
+    }
+
     public void Save(HelloResponse data)
     {
         // 2. [저장] '이름'을 꼬리표(Key)로 달아서 저장합니다.
@@ -36,4 +46,5 @@ public class HelloRepository
         // 3. [반환] 딕셔너리에 있는 '값(Value)'들만 싹 모아서 리스트로 줍니다.
         return _storage.Values.ToList();
     }
+    
 }

@@ -30,6 +30,18 @@ public class HelloService
 
         return response;
     }
+    // [추가] 단순 연결 역할
+    public List<HelloResponse> FindHello(string keyword)
+    {
+        // 비즈니스 로직: "검색어가 없으면 빈 리스트를 줄까, 전체를 줄까?"
+        // 여기선 "검색어가 비어있으면 전체 리스트 반환"으로 처리해 봅시다.
+        if (string.IsNullOrWhiteSpace(keyword))
+        {
+            return _repository.GetAll();
+        }
+
+        return _repository.Search(keyword);
+    }
 
     public List<HelloResponse> GetHistory()
     {

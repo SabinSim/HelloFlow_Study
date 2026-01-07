@@ -37,4 +37,15 @@ public class HelloController : ControllerBase // 7. 저는 'ControllerBase'라�
         var history = _service.GetHistory();
         return Ok(history);
     }
+    // [추가] GET /api/hello/search?name=검색어
+    [HttpGet("search")]
+    public IActionResult SearchHello(string name)
+    {
+        // 1. 주방장에게 검색 요청
+        var results = _service.FindHello(name);
+        
+        // 2. 결과가 없으면(0개) 404를 줄 수도 있고, 그냥 빈 리스트(200)를 줄 수도 있음.
+        // 보통 검색은 결과가 없어도 200 OK (빈 배열)를 주는 게 관례입니다.
+        return Ok(results);
+    }
 }

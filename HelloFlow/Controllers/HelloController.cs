@@ -14,20 +14,24 @@ public class HelloController : ControllerBase
         _service = service;
     }
 
-    // (기존 SayHello 등은 유지...)
+    // ▼▼▼ 1. [복구됨] 데이터 넣는 곳 (SayHello) ▼▼▼
+    // 이 메서드가 있어야 Swagger에서 데이터를 추가할 수 있습니다.
+    [HttpGet]
+    public IActionResult SayHello(string name)
+    {
+        var result = _service.GetHello(name);
+        return Ok(result);
+    }
 
-    // ▼▼▼ [Architect Version 핵심: 검색 API] ▼▼▼
-    // GET /api/hello/search?name=검색어&page=1&size=10
+    // ▼▼▼ 2. [기존 유지] 검색하는 곳 (SearchHello) ▼▼▼
     [HttpGet("search")]
     public IActionResult SearchHello(
-        [FromQuery] string? name,     // 검색어 (없을 수도 있음 -> nullable)
-        [FromQuery] int page = 1,     // 안 보내면 기본 1페이지
-        [FromQuery] int size = 10     // 안 보내면 기본 10개
+        [FromQuery] string? name,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10
     )
     {
-        // 서비스에게 처리를 위임
         var results = _service.FindHelloAdvanced(name ?? "", page, size);
-        
         return Ok(results);
     }
 }

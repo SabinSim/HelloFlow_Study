@@ -1,57 +1,54 @@
-using System.Collections.Concurrent;
+using HelloFlow.Data;
 using HelloFlow.Models;
 
 namespace HelloFlow.Repositories;
 
-// [En] Implements IHelloRepository. The compiler ensures all interface methods exist here.
-// [Ko] IHelloRepository를 구현합니다. 컴파일러는 인터페이스의 모든 메서드가 여기 있는지 감시합니다.
 public class HelloRepository : IHelloRepository
 {
-    // [En] Thread-safe storage to simulate a database in memory.
-    // [Ko] 메모리 상에서 데이터베이스를 흉내 내기 위한 스레드 안전 저장소입니다.
-    private readonly ConcurrentDictionary<string, HelloResponse> _storage = new();
+    // [En] Now depends on AppDbContext instead of a Dictionary.
+    // [Ko] 이제 딕셔너리 대신 DB 관리자(Context)에 의존합니다.
+    private readonly AppDbContext _context;
 
-    // [En] Implements the Save method defined in the interface.
-    // [Ko] 인터페이스에 정의된 Save 메서드를 실제로 구현합니다.
+    public HelloRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
     public void Save(HelloResponse data)
     {
-        // [En] Generates a unique Key (simulating a Primary Key in DB).
-        // [Ko] 고유 키를 생성합니다 (DB의 Primary Key 역할).
-        var key = Guid.NewGuid().ToString();
+        // [En] Tracks the entity to be added. Not saved to DB yet.
+        // [Ko] 데이터를 추가하겠다고 '표시'만 합니다. 아직 DB에 안 들어갔습니다.
+        _context.HelloResponses.Add(data);
         
-        // [En] Saves data to the dictionary.
-        // [Ko] 딕셔너리에 데이터를 저장합니다.
-        _storage.TryAdd(key, data);
+        // [En] Commits changes to the database. Generates INSERT SQL.
+        // [Ko] 변경 사항을 확정합니다. 이때 실제로 INSERT SQL이 날아갑니다. (필수!)
+        _context.SaveChanges();
     }
 
-    // [En] Implements the GetAll method.
-    // [Ko] GetAll 메서드를 구현합니다.
     public List<HelloResponse> GetAll()
     {
-        return _storage.Values.ToList();
+        // [En] SELECT * FROM HelloResponses
+        // [Ko] 테이블의 모든 데이터를 가져옵니다.
+        return _context.HelloResponses.ToList();
     }
 
-    // [En] Implements advanced search logic using LINQ.
-    // [Ko] LINQ를 사용하여 고급 검색 로직을 구현합니다.
     public List<HelloResponse> SearchAdvanced(string keyword, int pageNumber, int pageSize)
     {
-        // [En] Prepares the query without executing it immediately (Deferred Execution).
-        // [Ko] 즉시 실행하지 않고 쿼리 계획만 준비합니다 (지연 실행).
-        var query = _storage.Values.AsEnumerable(); 
+        // [En] Prepare Query (Deferred Execution)
+        // [Ko] 쿼리 준비 (지연 실행)
+        var query = _context.HelloResponses.AsQueryable();
 
-        // [En] Filters by keyword if it's not empty (Case-insensitive).
-        // [Ko] 검색어가 비어있지 않다면 필터링합니다 (대소문자 무시).
         if (!string.IsNullOrWhiteSpace(keyword))
         {
-            query = query.Where(x => x.Message.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+            // [En] Translates to SQL: WHERE Message LIKE '%keyword%'
+            // [Ko] SQL의 LIKE 검색으로 자동 번역됩니다.
+            query = query.Where(x => x.Message.Contains(keyword));
         }
 
-        // [En] Orders by date, skips previous pages, and takes only the page size.
-        // [Ko] 날짜순 정렬 후, 이전 페이지는 건너뛰고(Skip), 정해진 개수만 가져옵니다(Take).
         return query
             .OrderByDescending(x => x.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToList(); // [En] Executes the query now. / [Ko] 이제 쿼리를 실행합니다.
+            .ToList(); // [En] Execute Query / [Ko] 여기서 DB 조회 실행
     }
 }

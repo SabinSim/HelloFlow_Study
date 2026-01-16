@@ -1,24 +1,31 @@
 using HelloFlow.Services;
 using HelloFlow.Repositories;
+using HelloFlow.Data; // [Step 3.0] Added
+using Microsoft.EntityFrameworkCore; // [Step 3.0] Added
 
 var builder = WebApplication.CreateBuilder(args);
 
-// [En] Add services to the container (DI Setup).
-// [Ko] 컨테이너에 서비스들을 등록합니다 (의존성 주입 설정).
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ▼▼▼ [Dependency Injection Configuration] ▼▼▼
+// ▼▼▼ [Step 3.0: Database Configuration] ▼▼▼
 
-// [En] Mapping Interface to Implementation.
-// [Ko] 인터페이스와 구현체를 매핑(연결)합니다.
-// [En] Meaning: "When any class asks for IHelloRepository, provide the HelloRepository instance."
-// [Ko] 의미: "누군가 IHelloRepository를 달라고 하면, HelloRepository(구현체)를 줘라."
-builder.Services.AddSingleton<IHelloRepository, HelloRepository>();
+// [En] Configure Entity Framework to use SQLite. "app.db" is the filename.
+// [Ko] EF Core가 SQLite를 사용하도록 설정합니다. 데이터는 "app.db" 파일에 저장됩니다.
+// AZ-104 Tip: 나중에 이 부분만 "UseSqlServer"로 바꾸면 Azure SQL로 연결됩니다.
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
 
-// [En] Register HelloService. It will automatically receive the repository above.
-// [Ko] HelloService를 등록합니다. 위에서 등록한 리포지토리를 자동으로 주입받게 됩니다.
+// ▼▼▼ [Step 3.0: DI Container Update] ▼▼▼
+
+// [En] CHANGE: Singleton -> Scoped.
+// [Ko] 변경: Singleton에서 Scoped로 변경합니다.
+// [Reason] DbContext is Scoped. Singleton cannot depend on Scoped services.
+// [이유] DbContext가 Scoped(요청마다 생성)이기 때문에, Repository도 수명을 맞춰줘야 에러가 안 납니다.
+builder.Services.AddScoped<IHelloRepository, HelloRepository>();
+
+// Service is already Scoped, so keep it as is.
 builder.Services.AddScoped<HelloService>();
 
 // ▲▲▲ [Configuration End] ▲▲▲

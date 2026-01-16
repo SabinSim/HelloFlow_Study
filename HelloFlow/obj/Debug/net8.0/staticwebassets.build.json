@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "DFE3aZZ025aFW+P0qKEQ/dSgOrLA+3/bQxlhlCq7wic=",
-  "Source": "HelloFlow",
-  "BasePath": "_content/HelloFlow",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"DFZ77qPdHE0TXurmEH3Sh7Yp6j8eG/rize0NXYczuHU=","Source":"HelloFlow","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

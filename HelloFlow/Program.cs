@@ -4,10 +4,15 @@ using HelloFlow.Data; // [Step 3.0] Added
 using Microsoft.EntityFrameworkCore; // [Step 3.0] Added
 
 var builder = WebApplication.CreateBuilder(args);
+// 1. appsettings.json에서 Azure 주소를 가져옵니다.
+var connectionString = builder.Configuration.GetConnectionString("AzureSqlConnection");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// 2. Azure SQL Server용 배관으로 교체합니다.
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 // ▼▼▼ [Step 3.0: Database Configuration] ▼▼▼
 
